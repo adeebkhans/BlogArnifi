@@ -1,6 +1,10 @@
 import User from '../models/user.model.js';
 import { generateToken } from '../utils/generateToken.js';
 
+/**
+ * Registers a new user after validating required fields.
+ * Rejects duplicate email registrations and returns a JWT token on success.
+ */
 export const signup = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -25,6 +29,10 @@ export const signup = async (req, res, next) => {
   }
 };
 
+/**
+ * Authenticates a user by verifying credentials.
+ * Returns a JWT token upon successful login.
+ */
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -34,7 +42,9 @@ export const login = async (req, res, next) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
+    const isValid = user && await user.comparePassword(password);
+    
+    if (!isValid) {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
