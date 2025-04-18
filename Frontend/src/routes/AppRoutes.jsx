@@ -5,9 +5,9 @@ import { Routes, Route } from "react-router-dom";
  import CreateBlog from "../pages/CreateBlog";
  import EditBlog from "../pages/EditBlog";
  import MyBlogs from "../pages/MyBlogs";
- import PrivateRoute from "../components/PrivateRoute"; // Import the PrivateRoute
- import PublicRoute from "../components/PublicRoute"; // Import the PublicRoute
- import BlogPost from "../pages/BlogPost"; // Import the BlogPost component
+ import PrivateRoute from "../components/PrivateRoute"; 
+ import PublicRoute from "../components/PublicRoute"; 
+ import BlogPost from "../pages/BlogPost"; 
 
  const AppRoutes = () => {
   return (
