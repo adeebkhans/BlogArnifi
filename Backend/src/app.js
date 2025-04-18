@@ -11,7 +11,15 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+// Enable CORS and allow cookies
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "blog-arnifi-backend.vercel.app"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 app.use(express.json());
 
 app.use('/api', routes);
