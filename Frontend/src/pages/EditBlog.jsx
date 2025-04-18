@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { updateBlog } from "../features/blog/blogAPI";
@@ -37,31 +37,33 @@ const EditBlog = () => {
     setIsNewImage(true); // Indicate a new image has been selected
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when the request starts
-
+    setLoading(true);
+  
     try {
       const formData = new FormData();
       formData.append("title", blog.title);
       formData.append("category", blog.category);
       formData.append("content", content);
-
-      // Only append the new image if one has been selected
+  
       if (isNewImage && blog.image) {
         formData.append("image", blog.image);
       }
-
+  
       await updateBlog(id, formData);
       toast.success("Blog updated successfully");
-      Navigate("/");
+      navigate("/"); // ✅ use navigate here
     } catch (error) {
       console.error(error);
       toast.error("Error updating blog");
     } finally {
-      setLoading(false); // Set loading to false when the request completes
+      setLoading(false);
     }
   };
+  
 
   if (!existingBlog) {
     return <div className="text-center text-red-600 mt-10">Blog not found</div>;
