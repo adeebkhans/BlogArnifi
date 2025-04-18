@@ -17,6 +17,7 @@ export const createBlog = async (req, res, next) => {
             imageUrl = await uploadToCloudinary(req.file.buffer);
         }
 
+
         const blog = await Blog.create({
             title,
             category,
@@ -96,6 +97,16 @@ export const getBlogs = async (req, res, next) => {
         next(error);
     }
 };
+
+// export const getMyBlogs = async (req, res, next) => {
+//     try {
+//         const blogs = await Blog.find({ userId: req.user._id });
+//         res.status(200).json(blogs);
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
 
 export const deleteBlog = async (req, res, next) => {
     try {

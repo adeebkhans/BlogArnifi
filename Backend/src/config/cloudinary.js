@@ -11,13 +11,18 @@ export const uploadToCloudinary = (buffer, folder = 'blogs') => {
         const stream = cloudinary.uploader.upload_stream(
             { folder },
             (error, result) => {
-                if (error) return reject(error);
+                if (error) {
+                    console.error('Cloudinary upload error:', error);
+                    return reject(error);
+                }
+                // console.log('Cloudinary upload result:', result);
                 resolve(result.secure_url);
             }
         );
         stream.end(buffer);
     });
 };
+
 
 // Extracts public_id from a Cloudinary image URL
 const extractPublicId = (url) => {
