@@ -14,7 +14,7 @@ const app = express();
 // Enable CORS and allow cookies
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://blog-arnifi-backend.vercel.app"],
+    origin: ["http://localhost:5173", "https://blog-arnifi.vercel.app"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "DELETE"],
