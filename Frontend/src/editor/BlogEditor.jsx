@@ -1,75 +1,88 @@
-import React, { useEffect } from "react";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
-import { $generateHtmlFromNodes } from "@lexical/html";
-import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import { ListNode, ListItemNode } from "@lexical/list";
-import { TRANSFORMERS } from "@lexical/markdown";
+import React, { useEffect } from 'react';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import MenuBar from './MenuBar';
 
-import ToolbarPlugin from "./ToolbarPlugin"; // custom menu bar
-import "./editor.css"; // you can style this
+const coreExtensions = [StarterKit];
 
-const theme = {
-  // Customize classNames if you want
-  paragraph: "editor-paragraph",
-};
-
-const BlogEditor = ({ content, onChange }) => {
-  const initialConfig = {
-    namespace: "BlogEditor",
-    theme,
-    onError: (error) => {
-      console.error("Lexical error:", error);
+const BlogEditor = ({
+  content,
+  onChange,
+  placeholder = 'Type here...',
+  extensions = [],
+  className = '',
+  editorClassName = '',
+  menuBarPosition = 'top',
+  height = '400px'
+}) => {
+  const editor = useEditor({
+    extensions: [
+      ...coreExtensions,
+      Placeholder.configure({ 
+        placeholder,
+        // Show placeholder even when editor is not focused
+        showOnlyWhenEditable: true,
+        showOnlyCurrent: false,
+      }),
+      ...extensions
+    ],
+    content: content || '',
+    onUpdate: ({ editor }) => {
+      onChange?.(editor.getHTML());
     },
-    editorState: () => {
-      if (content) {
-        const parser = new DOMParser();
-        const dom = parser.parseFromString(content, "text/html");
-        return (editor) => {
-          editor.update(() => {
-            const root = editor.getRootElement();
-            if (dom.body.innerHTML) {
-              root.innerHTML = dom.body.innerHTML;
-            }
-          });
-        };
-      }
+    editorProps: {
+      attributes: {
+        class: 'min-h-full cursor-text outline-none', // Ensure full height
+      },
     },
-    nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode],
-  };
+  });
+
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
 
   return (
-    <LexicalComposer initialConfig={initialConfig}>
-      <div className="border rounded-md">
-        <ToolbarPlugin />
-        <div className="relative"> {/* Added a relative positioning container */}
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable className="p-3 min-h-[300px] focus:outline-none" />
-            }
-            placeholder={
-              <div className="p-3 text-gray-400 absolute top-0 left-0 pointer-events-none">
-                Write your blog content here...
-              </div>
-            }
-            ErrorBoundary={LexicalErrorBoundary}
+    <div 
+      style={{ height }} 
+      className={`bg-white border border-gray-300 rounded flex flex-col ${className}`}
+    >
+      {menuBarPosition === 'top' && <MenuBar editor={editor} />}
+
+      <div className="h-full overflow-hidden">
+        <div 
+          className={`editor-content-wrapper h-full p-3 overflow-y-auto ${
+            !editor ? 'rounded' : 
+            menuBarPosition === 'top' ? 'rounded-b' : 'rounded-t'
+          }`}
+          onClick={() => editor?.commands.focus()}
+          style={{ cursor: 'text' }} // Show text cursor
+        >
+          <EditorContent
+            editor={editor}
+            className={`h-full prose max-w-none focus:outline-none ${editorClassName}`}
           />
         </div>
-        <HistoryPlugin />
-        <OnChangePlugin
-          onChange={(editorState, editor) => {
-            editorState.read(() => {
-              const htmlString = $generateHtmlFromNodes(editor, null);
-              onChange?.(htmlString);
-            });
-          }}
-        />
       </div>
-    </LexicalComposer>
+
+      {menuBarPosition === 'bottom' && <MenuBar editor={editor} />}
+
+      {/* Add global styles for placeholder and editor */}
+      <style jsx global>{`
+        .ProseMirror p.is-empty:first-child::before {
+          content: attr(data-placeholder);
+          color: #999;
+          float: left;
+          height: 0;
+          pointer-events: none;
+        }
+        .ProseMirror {
+          min-height: 100%;
+        }
+      `}</style>
+    </div>
   );
 };
 
