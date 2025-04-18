@@ -81,23 +81,3 @@ const MenuBar = ({ editor }) => {
 
 export default MenuBar;
 
-// Your BlogEditor.jsx remains the same
-// import React from 'react';
-// import { useEditor, EditorContent } from "@tiptap/react";
-// import StarterKit from "@tiptap/starter-kit";
-// import Placeholder from "@tiptap/extension-placeholder";
-// import MenuBar from './MenuBar'; // Import the updated MenuBar
-
-// const BlogEditor = ({ content, setContent }) => {
-//   const editor = useEditor({ /* ... editor config ... */ });
-
-//   return (
-//     <div className="bg-white border border-gray-300 rounded"> {/* Adjusted border color slightly */}
-//       {editor && <MenuBar editor={editor} />}
-//       <div className="p-2"> {/* Added padding around content area */}
-//         <EditorContent editor={editor} className="min-h-[200px] prose max-w-none focus:outline-none" /> {/* Added prose class for basic typography */}
-//       </div>
-//     </div>
-//   );
-// };
-// export default BlogEditor;
