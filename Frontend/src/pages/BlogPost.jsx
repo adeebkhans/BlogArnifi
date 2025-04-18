@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
-import { useDispatch, useSelector } from "react-redux";
-import { setClickedBlogId } from "../features/blog/blogSlice"; // Import the action
+import {  useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { formatDate } from "../utils/formatDate";
 
 const BlogPost = () => {
-  const { id } = useParams();
-  const dispatch = useDispatch();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
-  // Get the clicked blog ID from Redux store
   const clickedBlogId = useSelector(state => state.blog.clickedBlogId);
 
   // Get the list of blogs from Redux store
@@ -19,6 +15,7 @@ const BlogPost = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // On mount or when blog list or selected ID changes, retrieve blog from Redux
   useEffect(() => {
     // Set blog data from Redux based on clicked blog ID
     if (clickedBlogId) {
@@ -33,6 +30,7 @@ const BlogPost = () => {
     }
   }, [clickedBlogId, blogs]);
 
+  // Show loader while fetching blog
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -42,6 +40,7 @@ const BlogPost = () => {
     );
   }
 
+  // Display error message if fetching blog fails
   if (error) {
     return (
       <div className="text-center text-red-600 mt-10 text-lg">
@@ -50,6 +49,7 @@ const BlogPost = () => {
     );
   }
 
+  // Handle rare case where blog is null without an error
   if (!blog) {
     return <div className="text-center mt-10">Blog not found</div>;
   }
@@ -73,11 +73,12 @@ const BlogPost = () => {
           />
         )}
 
+        {/* Render blog content as HTML */}
         <div className="prose prose-lg max-w-none text-gray-800 mb-8" dangerouslySetInnerHTML={{ __html: blog.content }} />
         
         <div className="flex justify-between items-center">
           <button
-            onClick={() => navigate("/")} // Navigate to home page when clicked
+            onClick={() => navigate("/")}
             className="text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg shadow-md"
           >
             Back to Blogs

@@ -8,10 +8,12 @@ const Home = () => {
   const dispatch = useDispatch();
   const { blogs, loading } = useSelector((state) => state.blog);
 
+  // Fetch all blogs on initial mount
   useEffect(() => {
     dispatch(fetchBlogs());
   }, []);
 
+  // Refetch blogs based on applied filters
   const handleFilter = (filters) => {
     dispatch(fetchBlogs(filters));
   };
@@ -22,15 +24,19 @@ const Home = () => {
         Arnifi Blogs
       </h1>
 
+      {/* Filter section for searching or narrowing down blog results */}
       <div className="mb-8 p-4 bg-white shadow rounded-md">
         <BlogFilter onFilter={handleFilter} />
       </div>
 
+      {/* Show loading spinner while fetching */}
       {loading ? (
         <div className="flex flex-col justify-center items-center py-20">
           <div className="w-10 h-10 border-4 border-blue-500 border-dashed rounded-full animate-spin mb-4"></div>
           <p className="text-gray-600">Loading blogs...</p>
         </div>
+
+      // Show message if no blogs match the filters
       ) : blogs.length === 0 ? (
         <div className="text-center text-gray-600 text-lg py-10">
           <svg className="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -39,6 +45,7 @@ const Home = () => {
           No blogs found. Try adjusting your filters.
         </div>
       ) : (
+        // Render all fetched blogs in a responsive grid
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           {blogs.map((blog) => (
             <BlogCard blog={blog} key={blog._id} />

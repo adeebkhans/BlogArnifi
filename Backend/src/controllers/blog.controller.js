@@ -1,7 +1,11 @@
 import Blog from '../models/blog.model.js';
 import cloudinary from '../config/cloudinary.js';
-import { deleteFromCloudinary, uploadToCloudinary  } from '../config/cloudinary.js';
+import { deleteFromCloudinary, uploadToCloudinary } from '../config/cloudinary.js';
 
+/**
+ * Creates a new blog post with optional image upload.
+ * Validates required fields and associates the blog with the authenticated user.
+ */
 export const createBlog = async (req, res, next) => {
     try {
         const { title, category, content } = req.body;
@@ -14,9 +18,9 @@ export const createBlog = async (req, res, next) => {
 
         let imageUrl = '';
         if (req.file) {
+            // Upload image to Cloudinary if provided
             imageUrl = await uploadToCloudinary(req.file.buffer);
         }
-
 
         const blog = await Blog.create({
             title,
@@ -36,18 +40,23 @@ export const createBlog = async (req, res, next) => {
     }
 };
 
+/**
+ * Updates a blog post if the authenticated user is the owner.
+ * Accepts any combination of updated fields, including a new image.
+ */
 export const updateBlog = async (req, res, next) => {
     try {
         const blog = await Blog.findById(req.params.id);
         if (!blog) return res.status(404).json({ message: 'Blog not found.' });
 
+        // Prevent unauthorized access to update
         if (!blog.userId.equals(req.user._id)) {
             return res.status(403).json({ message: 'You can only update your own blogs.' });
         }
 
         const hasFile = !!req.file;
 
-        // Require at least one field
+        // Ensure at least one field is being updated
         if (!(req.body.title) && !req.body.category && !req.body.content && !hasFile) {
             return res.status(400).json({
                 message: 'At least one of title, category, content, or image must be provided to update.',
@@ -62,6 +71,7 @@ export const updateBlog = async (req, res, next) => {
 
         if (hasFile) {
             const newImageUrl = await uploadToCloudinary(req.file.buffer);
+            // Avoid storing duplicate images
             if (blog.image && blog.image !== newImageUrl) {
                 await deleteFromCloudinary(blog.image);
             }
@@ -80,15 +90,20 @@ export const updateBlog = async (req, res, next) => {
     }
 };
 
+/**
+ * Retrieves blogs filtered by optional query parameters: category and author.
+ * Performs case-insensitive partial matching for both fields.
+ */
 export const getBlogs = async (req, res, next) => {
     try {
         const { category, author } = req.query;
         const filter = {};
+
         if (category) {
             filter.category = { $regex: category, $options: 'i' };
         }
         if (author) {
-            filter.author = { $regex: author, $options: 'i' }; // case insensitive search
+            filter.author = { $regex: author, $options: 'i' };
         }
 
         const blogs = await Blog.find(filter);
@@ -98,6 +113,10 @@ export const getBlogs = async (req, res, next) => {
     }
 };
 
+// /**
+//  * Retrieves blogs created by the currently authenticated user.
+//  * Currently commented out – could be used for a “My Blogs” page.
+//  */
 // export const getMyBlogs = async (req, res, next) => {
 //     try {
 //         const blogs = await Blog.find({ userId: req.user._id });
@@ -107,7 +126,10 @@ export const getBlogs = async (req, res, next) => {
 //     }
 // };
 
-
+/**
+ * Deletes a blog if it exists and belongs to the authenticated user.
+ * Cleans up associated image from Cloudinary if present.
+ */
 export const deleteBlog = async (req, res, next) => {
     try {
         const blog = await Blog.findById(req.params.id);
@@ -118,7 +140,7 @@ export const deleteBlog = async (req, res, next) => {
         if (!blog.userId.equals(req.user._id)) {
             return res.status(403).json({ message: 'You can only delete your own blogs.' });
         }
-        // Delete image from Cloudinary if exists
+
         if (blog.image) {
             await deleteFromCloudinary(blog.image);
         }

@@ -4,17 +4,27 @@ import { loginUser } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Login component for authenticating users.
+ * Manages form input, triggers login action, and provides feedback on login status.
+ */
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false); // loading state
+  const [loading, setLoading] = useState(false); // Tracks API request status
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  /**
+   * Handles login form submission.
+   * Dispatches loginUser action with form data and navigates on success.
+   * Displays toast messages based on request result.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // start loading
+    setLoading(true);
+
     const res = await dispatch(loginUser(form));
-    setLoading(false); // stop loading
+    setLoading(false);
 
     if (res.meta.requestStatus === "fulfilled") {
       toast.success("Login successful");
@@ -32,6 +42,7 @@ const Login = () => {
       >
         <h2 className="text-2xl font-semibold text-center text-gray-800">Login</h2>
 
+        {/* Email input field */}
         <div>
           <input
             type="email"
@@ -43,6 +54,7 @@ const Login = () => {
           />
         </div>
 
+        {/* Password input field */}
         <div>
           <input
             type="password"
@@ -54,6 +66,7 @@ const Login = () => {
           />
         </div>
 
+        {/* Submit button with loading indicator */}
         <div>
           <button
             type="submit"
@@ -64,6 +77,7 @@ const Login = () => {
           </button>
         </div>
 
+        {/* Navigation link for users without an account */}
         <p className="text-center text-gray-600 text-sm">
           Don't have an account?{" "}
           <a href="/signup" className="text-blue-600 hover:text-blue-700">

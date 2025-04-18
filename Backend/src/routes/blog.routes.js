@@ -11,8 +11,14 @@ import {
 
 const router = express.Router();
 
+/**
+ * Blog-related routes protected by authentication middleware.
+ * Includes support for file uploads and standard CRUD operations.
+ */
+
 router.get('/', protect, getBlogs);
-// router.get('/my-blogs', protect, getMyBlogs);
+
+
 router.post('/', protect, upload.single('image'), createBlog);
 router.put('/:id', protect, upload.single('image'), updateBlog);
 router.delete('/:id', protect, deleteBlog);
