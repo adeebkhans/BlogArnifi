@@ -51,8 +51,8 @@ This is a full-stack blog platform built using the **MERN stack** (MongoDB, Expr
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/adeebkhans/BlogArnifi
+cd BlogArnifi
 ```
 
 ### 2. Install Dependencies
@@ -84,6 +84,13 @@ JWT_SECRET=your_jwt_secret
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+```
+#### Frontend `.env`
+
+Create a `.env` file in the `frontend/` directory:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000
 ```
 
 ### 4. Run the App
