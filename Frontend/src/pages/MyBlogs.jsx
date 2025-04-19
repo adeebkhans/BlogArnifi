@@ -91,7 +91,7 @@ const MyBlogs = () => {
                   </Link>
                   <button
                     onClick={() => handleDelete(blog._id)}
-                    className="text-sm text-red-600 hover:text-red-800 font-medium"
+                    className="text-sm text-red-600 hover:text-red-800 font-medium cursor-pointer"
                   >
                     🗑️ Delete Blog
                   </button>
